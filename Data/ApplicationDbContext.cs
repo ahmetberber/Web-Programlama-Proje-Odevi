@@ -3,12 +3,10 @@ using HairSalonManagement.Models;
 
 namespace HairSalonManagement.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
-
-        public DbSet<Salon> Salons { get; set; }
-        public DbSet<Employee> Employees { get; set; }
-        public DbSet<Appointment> Appointments { get; set; }
+        public required DbSet<Salon> Salons { get; set; }
+        public required DbSet<Employee> Employees { get; set; }
+        public required DbSet<Appointment> Appointments { get; set; }
     }
 }
