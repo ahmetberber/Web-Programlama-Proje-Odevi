@@ -54,6 +54,11 @@ namespace HairSalonManagement.Controllers
                 return NotFound();
             }
             ViewData["SalonId"] = new SelectList(_context.Salons, "Id", "Name", employee.SalonId);
+            ViewData["IsAvailable"] = new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Müsait", Value = "true" },
+                new SelectListItem { Text = "Müsait Değil", Value = "false" }
+            };
             return View(employee);
         }
 

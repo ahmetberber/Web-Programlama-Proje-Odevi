@@ -9,15 +9,15 @@ namespace HairSalonManagement.Models
 
         [Required]
         [StringLength(50)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [Required]
-        public string Expertise { get; set; }
+        public required string Expertise { get; set; }
 
         public bool IsAvailable { get; set; } = true;
 
         [ForeignKey("Salon")]
         public int SalonId { get; set; }
-        public Salon Salon { get; set; }
+        public Salon? Salon { get; set; }
     }
 }

@@ -19,7 +19,7 @@
             <tr>
                 <td>@item.Name</td>
                 <td>@item.Expertise</td>
-                <td>@item.IsAvailable ? "Müsait" : "Müsait Değil"</td>
+                <td>@(item.IsAvailable ? "Müsait" : "Müsait Değil")</td>
                 <td>@item.Salon?.Name</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Düzenle</a>

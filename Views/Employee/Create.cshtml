@@ -1,47 +1,33 @@
 @model HairSalonManagement.Models.Employee
 
-@{
-    ViewData["Title"] = "Create";
-}
+<h2>Yeni Çalışan Ekle</h2>
 
-<h1>Create</h1>
-
-<h4>Employee</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Expertise" class="control-label"></label>
-                <input asp-for="Expertise" class="form-control" />
-                <span asp-validation-for="Expertise" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsAvailable" /> @Html.DisplayNameFor(model => model.IsAvailable)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="SalonId" class="control-label"></label>
-                <select asp-for="SalonId" class ="form-control" asp-items="ViewBag.SalonId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    <div class="form-group">
+        <label asp-for="Expertise" class="control-label"></label>
+        <input asp-for="Expertise" class="form-control" />
+        <span asp-validation-for="Expertise" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="IsAvailable" class="control-label"></label>
+        <select asp-for="IsAvailable" class="form-control">
+            <option value="true">Müsait</option>
+            <option value="false">Müsait Değil</option>
+        </select>
+        <span asp-validation-for="IsAvailable" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="SalonId" class="control-label">Salon</label>
+        <select asp-for="SalonId" class="form-control" asp-items="ViewBag.SalonId">
+            <option value="">Salon Seç</option>
+        </select>
+        <span asp-validation-for="SalonId" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <a asp-action="Index" class="btn btn-secondary">Geri</a>
+</form>

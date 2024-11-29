@@ -1,42 +1,14 @@
 @model HairSalonManagement.Models.Appointment
 
-@{
-    ViewData["Title"] = "Details";
-}
+<h2>Randevu Detayları</h2>
 
-<h1>Details</h1>
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">@Model.Service</h4>
+        <p class="card-text"><strong>Randevu Tarihi:</strong> @Model.AppointmentDate.ToString("dd/MM/yyyy HH:mm")</p>
+        <p class="card-text"><strong>Ücret:</strong> @Model.Price.ToString("C")</p>
+        <p class="card-text"><strong>Çalışan:</strong> @Model.Employee?.Name</p>
+    </div>
+</div>
 
-<div>
-    <h4>Appointment</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Service)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Service)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AppointmentDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AppointmentDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Employee)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Employee.Expertise)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+<a asp-action="Index" class="btn btn-secondary mt-3">Geri</a>

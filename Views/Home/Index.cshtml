@@ -1,8 +1,53 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Kuaför Yönetim Uygulaması";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Kuaför Yönetim Uygulamasına Hoş Geldiniz</h1>
+    <p class="lead">Kuaför ve berber salonlarınızı kolayca yönetin.</p>
+</div>
+
+<div class="container mt-5">
+    <div class="row text-center">
+        <!-- Salonlar Bölümü -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Salonlar</h5>
+                    <p class="card-text">Kuaför ve berber salonlarınızı ekleyin ve yönetin.</p>
+                    <a asp-controller="Salon" asp-action="Index" class="btn btn-primary">Salonları Görüntüle</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Çalışanlar Bölümü -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Çalışanlar</h5>
+                    <p class="card-text">Salonlarınızdaki çalışanları yönetin.</p>
+                    <a asp-controller="Employee" asp-action="Index" class="btn btn-success">Çalışanları Görüntüle</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Randevular Bölümü -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Randevular</h5>
+                    <p class="card-text">Müşterileriniz için randevuları yönetin.</p>
+                    <a asp-controller="Appointment" asp-action="Index" class="btn btn-warning">Randevuları Görüntüle</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hızlı Erişim -->
+    <div class="row text-center mt-5">
+        <div class="col">
+            <p class="lead">Yeni bir salon mu eklemek istiyorsunuz?</p>
+            <a asp-controller="Salon" asp-action="Create" class="btn btn-outline-primary">Salon Ekle</a>
+        </div>
+    </div>
 </div>

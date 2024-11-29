@@ -8,7 +8,7 @@ namespace HairSalonManagement.Models
         public int Id { get; set; }
 
         [Required]
-        public string Service { get; set; }
+        public required string Service { get; set; }
 
         [Required]
         public DateTime AppointmentDate { get; set; }
@@ -18,6 +18,6 @@ namespace HairSalonManagement.Models
 
         [ForeignKey("Employee")]
         public int EmployeeId { get; set; }
-        public Employee Employee { get; set; }
+        public Employee? Employee { get; set; }
     }
 }
