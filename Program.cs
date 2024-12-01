@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using HairSalonManagement.Data;
+using HairSalonManagement.Services; // Add this line if AiService is in the Services namespace
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // MVC Hizmetleri
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<AiService>(sp =>
+{
+    var configuration = sp.GetRequiredService<IConfiguration>();
+    var apiKey = configuration["OpenAI:ApiKey"];
+    return new AiService(apiKey!);
+});
+
 
 var app = builder.Build();
 

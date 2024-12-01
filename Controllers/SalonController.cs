@@ -40,7 +40,7 @@ namespace HairSalonManagement.Controllers
             {
                 Console.WriteLine(error.ErrorMessage);
             }
-            
+
             return View(salon);
         }
 
