@@ -31,12 +31,10 @@ namespace HairSalonManagement.Controllers
 
             try
             {
-                // Fotoğrafı byte array'e dönüştürme
                 using var memoryStream = new MemoryStream();
                 await photo.CopyToAsync(memoryStream);
                 var imageBytes = memoryStream.ToArray();
 
-                // Görüntüyü yapay zeka servisine gönderme
                 var suggestion = await _aiService.AnalyzeImageAsync(imageBytes);
 
                 ViewBag.Suggestion = suggestion!;

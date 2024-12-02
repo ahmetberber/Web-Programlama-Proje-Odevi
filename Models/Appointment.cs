@@ -12,9 +12,11 @@ namespace HairSalonManagement.Models
 
         [Required]
         public DateTime AppointmentDate { get; set; }
+        public int Duration { get; set; } // Süre (dakika)
 
         [Required]
         public decimal Price { get; set; }
+        public bool IsConfirmed { get; set; } // Onay durumu
 
         [ForeignKey("Employee")]
         public int EmployeeId { get; set; }

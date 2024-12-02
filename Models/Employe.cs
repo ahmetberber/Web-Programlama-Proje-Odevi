@@ -19,5 +19,7 @@ namespace HairSalonManagement.Models
         [ForeignKey("Salon")]
         public int SalonId { get; set; }
         public Salon? Salon { get; set; }
+        public TimeSpan StartTime { get; set; }
+        public TimeSpan EndTime { get; set; }
     }
 }

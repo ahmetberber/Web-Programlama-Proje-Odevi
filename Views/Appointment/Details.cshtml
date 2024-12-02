@@ -6,8 +6,10 @@
     <div class="card-body">
         <h4 class="card-title">@Model.Service</h4>
         <p class="card-text"><strong>Randevu Tarihi:</strong> @Model.AppointmentDate.ToString("dd/MM/yyyy HH:mm")</p>
+        <p class="card-text"><strong>Süre:</strong> @Model.Duration</p>
         <p class="card-text"><strong>Ücret:</strong> @Model.Price.ToString("C")</p>
         <p class="card-text"><strong>Çalışan:</strong> @Model.Employee?.Name</p>
+        <p><strong>Durum:</strong> @(Model.IsConfirmed ? "Onaylandı" : "Onay Bekliyor")</p>
     </div>
 </div>
 

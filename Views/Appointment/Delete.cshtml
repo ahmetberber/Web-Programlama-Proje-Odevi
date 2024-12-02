@@ -8,13 +8,12 @@
 
 <div>
     <h5>@Model.Service</h5>
-    <p><strong>Randevu Tarihi:</strong> @Model.AppointmentDate.ToString("dd/MM/yyyy HH:mm")</p>
-    <p><strong>Ücret:</strong> @Model.Price.ToString("C")</p>
-    <p><strong>Çalışan:</strong> @Model.Employee?.Name</p>
+    <p><strong>Çalışan:</strong> @Model.Employee.Name</p>
+    <p><strong>Tarih ve Saat:</strong> @Model.AppointmentDate.ToString("g")</p>
 </div>
 
 <form asp-action="Delete" method="post">
     <input type="hidden" asp-for="Id" />
     <button type="submit" class="btn btn-danger">Sil</button>
-    <a asp-action="Index" class="btn btn-secondary">Geri</a>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
 </form>
