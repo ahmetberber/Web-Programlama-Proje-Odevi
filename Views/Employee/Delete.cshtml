@@ -6,14 +6,23 @@
     <h4>Bu çalışanı silmek istediğinize emin misiniz?</h4>
 </div>
 
-<div>
-    <h5>@Model.Name</h5>
-    <p><strong>Uzmanlık:</strong> @Model.Expertise</p>
-    <p><strong>Müsaitlik:</strong> @(Model.IsAvailable ? "Müsait" : "Müsait Değil")</p>
+<div class="card">
+    <div class="card-body">
+        <p><strong>Ad:</strong> @Model.Name</p>
+        <p><strong>Uzmanlık:</strong> @Model.Specialization</p>
+        <p><strong>Çalışma Saatleri:</strong> @Model.StartTime - @Model.EndTime</p>
+        <p><strong>Hizmetler:</strong></p>
+        <ul>
+            @foreach (var service in Model.Services)
+            {
+                <li>@service.Name</li>
+            }
+        </ul>
+    </div>
 </div>
 
 <form asp-action="Delete" method="post">
     <input type="hidden" asp-for="Id" />
     <button type="submit" class="btn btn-danger">Sil</button>
-    <a asp-action="Index" class="btn btn-secondary">Geri</a>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
 </form>

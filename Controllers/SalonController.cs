@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using HairSalonManagement.Data;
 using HairSalonManagement.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace HairSalonManagement.Controllers
 {
@@ -16,37 +16,33 @@ namespace HairSalonManagement.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Salons.ToListAsync());
+            var salons = await _context.Salons.Include(s => s.Services).ToListAsync();
+            return View(salons);
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,WorkingHours")] Salon salon)
+        public async Task<IActionResult> Create(Salon salon)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(salon);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return View(salon);
             }
 
-
-            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-            {
-                Console.WriteLine(error.ErrorMessage);
-            }
-
-            return View(salon);
+            _context.Salons.Add(salon);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Salons == null)
+            if (id == null)
             {
                 return NotFound();
             }
@@ -56,50 +52,50 @@ namespace HairSalonManagement.Controllers
             {
                 return NotFound();
             }
+
             return View(salon);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,WorkingHours")] Salon salon)
+        public async Task<IActionResult> Edit(Salon salon)
         {
-            if (id != salon.Id)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return View(salon);
             }
 
-            if (ModelState.IsValid)
+            try
             {
-                try
-                {
-                    _context.Update(salon);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SalonExists(salon.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                _context.Update(salon);
+                await _context.SaveChangesAsync();
             }
-            return View(salon);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Salons.Any(s => s.Id == salon.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Salons == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
             var salon = await _context.Salons
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(s => s.Services)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
             if (salon == null)
             {
                 return NotFound();
@@ -109,26 +105,37 @@ namespace HairSalonManagement.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Salons == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Salons'  is null.");
-            }
             var salon = await _context.Salons.FindAsync(id);
+
             if (salon != null)
             {
                 _context.Salons.Remove(salon);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool SalonExists(int id)
+        [HttpGet]
+        public async Task<IActionResult> Details(int? id)
         {
-            return _context.Salons.Any(e => e.Id == id);
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var salon = await _context.Salons
+                .Include(s => s.Services)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (salon == null)
+            {
+                return NotFound();
+            }
+
+            return View(salon);
         }
     }
 }

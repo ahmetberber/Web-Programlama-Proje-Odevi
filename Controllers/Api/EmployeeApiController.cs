@@ -23,11 +23,26 @@ namespace HairSalonManagement.Controllers.Api
             return await _context.Employees.ToListAsync();
         }
 
-        // 2. Çalışanların uygunluk durumunu getir
+        // Çalışanların uygunluk durumunu kontrol et
         [HttpGet("available")]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetAvailableEmployees()
+        public async Task<ActionResult<IEnumerable<Employee>>> GetAvailableEmployees(DateTime appointmentDate, int duration)
         {
-            return await _context.Employees.Where(e => e.IsAvailable).ToListAsync();
+            var startTime = appointmentDate.TimeOfDay;
+            var endTime = startTime.Add(TimeSpan.FromMinutes(duration));
+
+            // Çalışma saatleri ve mevcut randevulara göre uygun çalışanları filtrele
+            var availableEmployees = await _context.Employees
+                .Where(e => e.StartTime <= startTime && e.EndTime >= endTime) // Çalışma saatleri içinde
+                .Where(e => !_context.Appointments
+                    .Where(a => a.AppointmentDate.Date == appointmentDate.Date) // Aynı gün
+                    .Where(a => a.EmployeeId == e.Id) // Aynı çalışan
+                    .Any(a =>
+                        a.AppointmentDate.TimeOfDay < endTime && // Çakışma kontrolü
+                        a.AppointmentDate.TimeOfDay.Add(TimeSpan.FromMinutes(a.Duration)) > startTime
+                    ))
+                .ToListAsync();
+
+            return availableEmployees;
         }
 
         // 3. ID ile çalışan getir

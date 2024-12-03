@@ -8,5 +8,7 @@ namespace HairSalonManagement.Data
         public required DbSet<Salon> Salons { get; set; }
         public required DbSet<Employee> Employees { get; set; }
         public required DbSet<Appointment> Appointments { get; set; }
+
+        public required DbSet<Service> Services { get; set; }
     }
 }

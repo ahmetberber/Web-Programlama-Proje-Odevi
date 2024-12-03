@@ -4,6 +4,7 @@ using HairSalonManagement.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Web_Programlama_Proje_Odevi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241203114508_AddSalonAndService")]
+    partial class AddSalonAndService
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,18 +70,27 @@ namespace Web_Programlama_Proje_Odevi.Migrations
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("time");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Expertise")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Specialization")
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("SalonId")
+                        .HasColumnType("int");
 
                     b.Property<TimeSpan>("StartTime")
                         .HasColumnType("time");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SalonId");
 
                     b.ToTable("Employees");
                 });
@@ -121,9 +133,6 @@ namespace Web_Programlama_Proje_Odevi.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
-                    b.Property<int?>("EmployeeId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -136,11 +145,9 @@ namespace Web_Programlama_Proje_Odevi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployeeId");
-
                     b.HasIndex("SalonId");
 
-                    b.ToTable("Services");
+                    b.ToTable("Service");
                 });
 
             modelBuilder.Entity("HairSalonManagement.Models.Appointment", b =>
@@ -154,14 +161,10 @@ namespace Web_Programlama_Proje_Odevi.Migrations
                     b.Navigation("Employee");
                 });
 
-            modelBuilder.Entity("HairSalonManagement.Models.Service", b =>
+            modelBuilder.Entity("HairSalonManagement.Models.Employee", b =>
                 {
-                    b.HasOne("HairSalonManagement.Models.Employee", null)
-                        .WithMany("Services")
-                        .HasForeignKey("EmployeeId");
-
                     b.HasOne("HairSalonManagement.Models.Salon", "Salon")
-                        .WithMany("Services")
+                        .WithMany()
                         .HasForeignKey("SalonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -169,9 +172,15 @@ namespace Web_Programlama_Proje_Odevi.Migrations
                     b.Navigation("Salon");
                 });
 
-            modelBuilder.Entity("HairSalonManagement.Models.Employee", b =>
+            modelBuilder.Entity("HairSalonManagement.Models.Service", b =>
                 {
-                    b.Navigation("Services");
+                    b.HasOne("HairSalonManagement.Models.Salon", "Salon")
+                        .WithMany("Services")
+                        .HasForeignKey("SalonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Salon");
                 });
 
             modelBuilder.Entity("HairSalonManagement.Models.Salon", b =>

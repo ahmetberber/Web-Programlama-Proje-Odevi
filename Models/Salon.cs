@@ -2,14 +2,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HairSalonManagement.Models
 {
-    public class Salon
-    {
-        public int Id { get; set; }
-        [Required]
-        public required string Name { get; set; }
+public class Salon
+{
+    public int Id { get; set; }
+    public required string Name { get; set; }
+    public required string Address { get; set; }
+    public TimeSpan OpeningTime { get; set; }
+    public TimeSpan ClosingTime { get; set; }
 
-        [Required]
-        public required string WorkingHours { get; set; }
-        public ICollection<Employee>? Employees { get; set; }
-    }
+    public ICollection<Service>? Services { get; set; }
+}
+
 }

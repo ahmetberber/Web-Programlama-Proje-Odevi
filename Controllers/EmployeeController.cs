@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HairSalonManagement.Data;
 using HairSalonManagement.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HairSalonManagement.Controllers
 {
@@ -15,106 +15,100 @@ namespace HairSalonManagement.Controllers
             _context = context;
         }
 
+        // Tüm çalışanları listele
         public async Task<IActionResult> Index()
         {
-            var employees = _context.Employees.Include(e => e.Salon);
-            return View(await employees.ToListAsync());
+            var employees = await _context.Employees.Include(e => e.Services).ToListAsync();
+            return View(employees);
         }
 
+        // Yeni çalışan oluşturma formu
+        [HttpGet]
         public IActionResult Create()
         {
-            ViewData["SalonId"] = new SelectList(_context.Salons, "Id", "Name");
+            ViewBag.Services = new SelectList(_context.Services, "Id", "Name");
             return View();
         }
 
+        // Yeni çalışan kaydet
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Expertise,IsAvailable,SalonId")] Employee employee)
+        public async Task<IActionResult> Create(Employee employee, int[] selectedServices)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(employee);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ViewBag.Services = new SelectList(_context.Services, "Id", "Name");
+                return View(employee);
             }
-            ViewData["SalonId"] = new SelectList(_context.Salons, "Id", "Name", employee.SalonId);
-            return View(employee);
+
+            employee.Services = _context.Services.Where(s => selectedServices.Contains(s.Id)).ToList();
+
+            _context.Employees.Add(employee);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
+        // Düzenleme formunu getir
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var employee = await _context.Employees.FindAsync(id);
-            if (employee == null)
-            {
-                return NotFound();
-            }
-            ViewData["SalonId"] = new SelectList(_context.Salons, "Id", "Name", employee.SalonId);
-            ViewData["IsAvailable"] = new List<SelectListItem>
-            {
-                new SelectListItem { Text = "Müsait", Value = "true" },
-                new SelectListItem { Text = "Müsait Değil", Value = "false" }
-            };
-            return View(employee);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Expertise,IsAvailable,SalonId")] Employee employee)
-        {
-            if (id != employee.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(employee);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EmployeeExists(employee.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["SalonId"] = new SelectList(_context.Salons, "Id", "Name", employee.SalonId);
-            return View(employee);
-        }
-
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var employee = await _context.Employees
-                .Include(e => e.Salon)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (employee == null)
+                .Include(e => e.Services)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (employee == null) return NotFound();
+
+            ViewBag.Services = new SelectList(_context.Services, "Id", "Name");
+            return View(employee);
+        }
+
+        // Düzenleme kaydet
+        [HttpPost]
+        public async Task<IActionResult> Edit(Employee employee, int[] selectedServices)
+        {
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                ViewBag.Services = new SelectList(_context.Services, "Id", "Name");
+                return View(employee);
             }
+
+            var existingEmployee = await _context.Employees
+                .Include(e => e.Services)
+                .FirstOrDefaultAsync(e => e.Id == employee.Id);
+
+            if (existingEmployee == null) return NotFound();
+
+            existingEmployee.Name = employee.Name;
+            existingEmployee.Specialization = employee.Specialization;
+            existingEmployee.StartTime = employee.StartTime;
+            existingEmployee.EndTime = employee.EndTime;
+
+            existingEmployee.Services.Clear();
+            existingEmployee.Services = _context.Services.Where(s => selectedServices.Contains(s.Id)).ToList();
+
+            _context.Update(existingEmployee);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Silme işlemi öncesi onay sayfasını getir
+        [HttpGet]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var employee = await _context.Employees
+                .Include(e => e.Services)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (employee == null) return NotFound();
 
             return View(employee);
         }
 
+        // Silme işlemini gerçekleştir
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var employee = await _context.Employees.FindAsync(id);
@@ -126,9 +120,19 @@ namespace HairSalonManagement.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool EmployeeExists(int id)
+        // Detayları görüntüle
+        [HttpGet]
+        public async Task<IActionResult> Details(int? id)
         {
-            return _context.Employees.Any(e => e.Id == id);
+            if (id == null) return NotFound();
+
+            var employee = await _context.Employees
+                .Include(e => e.Services)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (employee == null) return NotFound();
+
+            return View(employee);
         }
     }
 }

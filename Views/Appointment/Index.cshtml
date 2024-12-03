@@ -1,14 +1,15 @@
 @model IEnumerable<HairSalonManagement.Models.Appointment>
 
-<h2>Tüm Randevular</h2>
+<h2>Randevular</h2>
+<a asp-action="Create" class="btn btn-primary mb-3">Yeni Randevu Ekle</a>
 
 <table class="table">
     <thead>
         <tr>
             <th>Hizmet</th>
             <th>Tarih ve Saat</th>
-            <th>Çalışan</th>
             <th>Süre</th>
+            <th>Ücret</th>
             <th>Durum</th>
             <th>İşlem</th>
         </tr>
@@ -19,13 +20,20 @@
             <tr>
                 <td>@appointment.Service</td>
                 <td>@appointment.AppointmentDate.ToString("g")</td>
-                <td>@appointment.Employee.Name</td>
-                <td>@appointment.Duration</td>
+                <td>@appointment.Duration dakika</td>
+                <td>@appointment.Price.ToString("C")</td>
                 <td>@(appointment.IsConfirmed ? "Onaylandı" : "Onay Bekliyor")</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@appointment.Id" class="btn btn-info">Detaylar</a>
-                    <a asp-action="Edit" asp-route-id="@appointment.Id" class="btn btn-warning">Düzenle</a>
                     <a asp-action="Delete" asp-route-id="@appointment.Id" class="btn btn-danger">Sil</a>
+                    @if (!appointment.IsConfirmed)
+                    {
+                        <a asp-action="Edit" asp-route-id="@appointment.Id" class="btn btn-warning">Düzenle</a>
+                        <form asp-action="Confirm" method="post">
+                            <input type="hidden" name="id" value="@appointment.Id" />
+                            <button type="submit" class="btn btn-success">Onayla</button>
+                        </form>
+                    }
                 </td>
             </tr>
         }

@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HairSalonManagement.Models
 {
@@ -7,19 +6,18 @@ namespace HairSalonManagement.Models
     {
         public int Id { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public required string Name { get; set; }
+        [Required(ErrorMessage = "Çalışan adı gereklidir.")]
+        public string Name { get; set; }
 
-        [Required]
-        public required string Expertise { get; set; }
+        [Required(ErrorMessage = "Uzmanlık alanı gereklidir.")]
+        public string Specialization { get; set; } // Örneğin: Saç Kesimi, Saç Boyama
 
-        public bool IsAvailable { get; set; } = true;
+        [Required(ErrorMessage = "Çalışma başlangıç saati gereklidir.")]
+        public TimeSpan StartTime { get; set; } // Çalışma başlangıç saati
 
-        [ForeignKey("Salon")]
-        public int SalonId { get; set; }
-        public Salon? Salon { get; set; }
-        public TimeSpan StartTime { get; set; }
-        public TimeSpan EndTime { get; set; }
+        [Required(ErrorMessage = "Çalışma bitiş saati gereklidir.")]
+        public TimeSpan EndTime { get; set; } // Çalışma bitiş saati
+
+        public ICollection<Service> Services { get; set; } // Çalışanın yapabildiği işlemler
     }
 }

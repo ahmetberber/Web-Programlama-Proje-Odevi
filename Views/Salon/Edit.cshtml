@@ -1,19 +1,33 @@
 @model HairSalonManagement.Models.Salon
 
-<h2>Salonu Düzenle</h2>
+<h2>Salon Düzenle</h2>
 
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="Id" />
     <div class="form-group">
-        <label asp-for="Name" class="control-label"></label>
+        <label asp-for="Name" class="control-label">Salon Adı</label>
         <input asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label asp-for="WorkingHours" class="control-label"></label>
-        <input asp-for="WorkingHours" class="form-control" />
-        <span asp-validation-for="WorkingHours" class="text-danger"></span>
+        <label asp-for="Address" class="control-label">Adres</label>
+        <input asp-for="Address" class="form-control" />
+        <span asp-validation-for="Address" class="text-danger"></span>
     </div>
+
+    <div class="form-group">
+        <label asp-for="OpeningTime" class="control-label">Açılış Saati</label>
+        <input asp-for="OpeningTime" type="time" class="form-control" />
+        <span asp-validation-for="OpeningTime" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ClosingTime" class="control-label">Kapanış Saati</label>
+        <input asp-for="ClosingTime" type="time" class="form-control" />
+        <span asp-validation-for="ClosingTime" class="text-danger"></span>
+    </div>
+
     <button type="submit" class="btn btn-primary">Kaydet</button>
-    <a asp-action="Index" class="btn btn-secondary">Geri</a>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
 </form>

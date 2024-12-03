@@ -4,11 +4,17 @@
 
 <div class="card">
     <div class="card-body">
-        <h4 class="card-title">@Model.Name</h4>
-        <p class="card-text"><strong>Uzmanlık:</strong> @Model.Expertise</p>
-        <p class="card-text"><strong>Müsaitlik:</strong> @(Model.IsAvailable ? "Müsait" : "Müsait Değil")</p>
-        <p class="card-text"><strong>Salon:</strong> @Model.Salon?.Name</p>
+        <p><strong>Ad:</strong> @Model.Name</p>
+        <p><strong>Uzmanlık:</strong> @Model.Specialization</p>
+        <p><strong>Çalışma Saatleri:</strong> @Model.StartTime - @Model.EndTime</p>
+        <p><strong>Hizmetler:</strong></p>
+        <ul>
+            @foreach (var service in Model.Services)
+            {
+                <li>@service.Name</li>
+            }
+        </ul>
     </div>
 </div>
 
-<a asp-action="Index" class="btn btn-secondary mt-3">Geri</a>
+<a asp-action="Index" class="btn btn-secondary">Geri</a>

@@ -1,18 +1,22 @@
 @model HairSalonManagement.Models.Salon
 
-<h2>Salonu Sil</h2>
+<h2>Salon Sil</h2>
 
 <div class="alert alert-danger">
     <h4>Bu salonu silmek istediğinize emin misiniz?</h4>
 </div>
 
-<div>
-    <h5>@Model.Name</h5>
-    <p><strong>Çalışma Saatleri:</strong> @Model.WorkingHours</p>
+<div class="card">
+    <div class="card-body">
+        <p><strong>Salon Adı:</strong> @Model.Name</p>
+        <p><strong>Adres:</strong> @Model.Address</p>
+        <p><strong>Açılış Saati:</strong> @Model.OpeningTime</p>
+        <p><strong>Kapanış Saati:</strong> @Model.ClosingTime</p>
+    </div>
 </div>
 
 <form asp-action="Delete" method="post">
     <input type="hidden" asp-for="Id" />
     <button type="submit" class="btn btn-danger">Sil</button>
-    <a asp-action="Index" class="btn btn-secondary">Geri</a>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
 </form>

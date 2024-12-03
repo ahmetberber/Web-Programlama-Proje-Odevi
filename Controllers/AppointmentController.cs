@@ -20,25 +20,41 @@ namespace HairSalonManagement.Controllers
             var appointments = _context.Appointments.Include(a => a.Employee);
             return View(await appointments.ToListAsync());
         }
-
+        
+        [HttpGet]
         public IActionResult Create()
         {
-            ViewData["EmployeeId"] = new SelectList(_context.Employees.Where(e => e.IsAvailable), "Id", "Name");
+            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Name");
             return View();
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Service,AppointmentDate,Price,EmployeeId")] Appointment appointment)
+        public IActionResult Create(Appointment appointment)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(appointment);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                // Randevu alınacak çalışanların uygunluğunu kontrol et
+                var startTime = appointment.AppointmentDate.TimeOfDay;
+                var endTime = startTime.Add(TimeSpan.FromMinutes(appointment.Duration));
+
+                var availableEmployees = _context.Employees
+                    .Where(e => e.StartTime <= startTime && e.EndTime >= endTime) // Çalışma saatleri içinde
+                    .Where(e => !_context.Appointments
+                        .Where(a => a.AppointmentDate.Date == appointment.AppointmentDate.Date) // Aynı gün
+                        .Where(a => a.EmployeeId == e.Id) // Aynı çalışan
+                        .Any(a =>
+                            a.AppointmentDate.TimeOfDay < endTime && // Çakışma kontrolü
+                            a.AppointmentDate.TimeOfDay.Add(TimeSpan.FromMinutes(a.Duration)) > startTime
+                        ))
+                    .ToList();
+
+                ViewData["EmployeeId"] = new SelectList(availableEmployees, "Id", "Name");
+                return View(appointment);
             }
-            ViewData["EmployeeId"] = new SelectList(_context.Employees.Where(e => e.IsAvailable), "Id", "Name", appointment.EmployeeId);
-            return View(appointment);
+
+            _context.Appointments.Add(appointment);
+            _context.SaveChanges();
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -110,7 +126,7 @@ namespace HairSalonManagement.Controllers
                 return NotFound();
             }
 
-            appointment.IsConfirmed = true; // Randevuyu onayla
+            appointment.IsConfirmed = true;
             _context.Update(appointment);
             await _context.SaveChangesAsync();
 
