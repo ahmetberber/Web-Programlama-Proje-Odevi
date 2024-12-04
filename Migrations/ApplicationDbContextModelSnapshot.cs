@@ -30,7 +30,7 @@ namespace Web_Programlama_Proje_Odevi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("AppointmentDate")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Duration")
@@ -39,19 +39,19 @@ namespace Web_Programlama_Proje_Odevi.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsConfirmed")
-                        .HasColumnType("bit");
+                    b.Property<int>("SalonId")
+                        .HasColumnType("int");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Service")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
+
+                    b.HasIndex("SalonId");
+
+                    b.HasIndex("ServiceId");
 
                     b.ToTable("Appointments");
                 });
@@ -71,16 +71,32 @@ namespace Web_Programlama_Proje_Odevi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Specialization")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("SalonId")
+                        .HasColumnType("int");
 
                     b.Property<TimeSpan>("StartTime")
                         .HasColumnType("time");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("SalonId");
+
                     b.ToTable("Employees");
+                });
+
+            modelBuilder.Entity("HairSalonManagement.Models.EmployeeService", b =>
+                {
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("EmployeeId", "ServiceId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("EmployeeServices");
                 });
 
             modelBuilder.Entity("HairSalonManagement.Models.Salon", b =>
@@ -105,6 +121,9 @@ namespace Web_Programlama_Proje_Odevi.Migrations
                     b.Property<TimeSpan>("OpeningTime")
                         .HasColumnType("time");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Salons");
@@ -121,9 +140,6 @@ namespace Web_Programlama_Proje_Odevi.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
-                    b.Property<int?>("EmployeeId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -136,8 +152,6 @@ namespace Web_Programlama_Proje_Odevi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployeeId");
-
                     b.HasIndex("SalonId");
 
                     b.ToTable("Services");
@@ -148,18 +162,60 @@ namespace Web_Programlama_Proje_Odevi.Migrations
                     b.HasOne("HairSalonManagement.Models.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HairSalonManagement.Models.Salon", "Salon")
+                        .WithMany()
+                        .HasForeignKey("SalonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HairSalonManagement.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Employee");
+
+                    b.Navigation("Salon");
+
+                    b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("HairSalonManagement.Models.Employee", b =>
+                {
+                    b.HasOne("HairSalonManagement.Models.Salon", "Salon")
+                        .WithMany("Employees")
+                        .HasForeignKey("SalonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Salon");
+                });
+
+            modelBuilder.Entity("HairSalonManagement.Models.EmployeeService", b =>
+                {
+                    b.HasOne("HairSalonManagement.Models.Employee", "Employee")
+                        .WithMany("EmployeeServices")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HairSalonManagement.Models.Service", "Service")
+                        .WithMany("EmployeeServices")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("HairSalonManagement.Models.Service", b =>
                 {
-                    b.HasOne("HairSalonManagement.Models.Employee", null)
-                        .WithMany("Services")
-                        .HasForeignKey("EmployeeId");
-
                     b.HasOne("HairSalonManagement.Models.Salon", "Salon")
                         .WithMany("Services")
                         .HasForeignKey("SalonId")
@@ -171,12 +227,19 @@ namespace Web_Programlama_Proje_Odevi.Migrations
 
             modelBuilder.Entity("HairSalonManagement.Models.Employee", b =>
                 {
-                    b.Navigation("Services");
+                    b.Navigation("EmployeeServices");
                 });
 
             modelBuilder.Entity("HairSalonManagement.Models.Salon", b =>
                 {
+                    b.Navigation("Employees");
+
                     b.Navigation("Services");
+                });
+
+            modelBuilder.Entity("HairSalonManagement.Models.Service", b =>
+                {
+                    b.Navigation("EmployeeServices");
                 });
 #pragma warning restore 612, 618
         }

@@ -5,13 +5,12 @@
 <div class="card">
     <div class="card-body">
         <p><strong>Ad:</strong> @Model.Name</p>
-        <p><strong>Uzmanlık:</strong> @Model.Specialization</p>
         <p><strong>Çalışma Saatleri:</strong> @Model.StartTime - @Model.EndTime</p>
         <p><strong>Hizmetler:</strong></p>
         <ul>
-            @foreach (var service in Model.Services)
+            @foreach (var service in Model.EmployeeServices)
             {
-                <li>@service.Name</li>
+                <li>@service.Service.Name</li>
             }
         </ul>
     </div>

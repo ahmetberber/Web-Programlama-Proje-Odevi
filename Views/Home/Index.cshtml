@@ -16,21 +16,10 @@
                     <h5 class="card-title">Salonlar</h5>
                     <p class="card-text">Kuaför ve berber salonlarınızı ekleyin ve yönetin.</p>
                     <a asp-controller="Salon" asp-action="Index" class="btn btn-primary">Salonları Görüntüle</a>
+                    <a asp-controller="Salon" asp-action="Create" class="btn btn-outline-primary">Salon Ekle</a>
                 </div>
             </div>
         </div>
-
-        <!-- Çalışanlar Bölümü -->
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Çalışanlar</h5>
-                    <p class="card-text">Salonlarınızdaki çalışanları yönetin.</p>
-                    <a asp-controller="Employee" asp-action="Index" class="btn btn-success">Çalışanları Görüntüle</a>
-                </div>
-            </div>
-        </div>
-
         <!-- Randevular Bölümü -->
         <div class="col-md-4">
             <div class="card shadow-sm">
@@ -38,16 +27,9 @@
                     <h5 class="card-title">Randevular</h5>
                     <p class="card-text">Müşterileriniz için randevuları yönetin.</p>
                     <a asp-controller="Appointment" asp-action="Index" class="btn btn-warning">Randevuları Görüntüle</a>
+                    <a asp-controller="Appointment" asp-action="Create" class="btn btn-outline-warning">Randevu Ekle</a>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Hızlı Erişim -->
-    <div class="row text-center mt-5">
-        <div class="col">
-            <p class="lead">Yeni bir salon mu eklemek istiyorsunuz?</p>
-            <a asp-controller="Salon" asp-action="Create" class="btn btn-outline-primary">Salon Ekle</a>
         </div>
     </div>
 </div>

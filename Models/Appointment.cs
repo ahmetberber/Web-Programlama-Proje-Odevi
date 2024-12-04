@@ -1,5 +1,5 @@
+using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HairSalonManagement.Models
 {
@@ -8,18 +8,20 @@ namespace HairSalonManagement.Models
         public int Id { get; set; }
 
         [Required]
-        public required string Service { get; set; }
+        public DateTime Date { get; set; } // Randevu tarihi ve saati
 
         [Required]
-        public DateTime AppointmentDate { get; set; }
-        public int Duration { get; set; }
+        public int Duration { get; set; } // Randevu süresi (dakika)
+
+        public int SalonId { get; set; } // Randevunun yapıldığı salon
+        public required Salon Salon { get; set; } // Salon ile ilişki
 
         [Required]
-        public decimal Price { get; set; }
-        public bool IsConfirmed { get; set; }
+        public int ServiceId { get; set; } // Alınacak hizmet
+        public required Service Service { get; set; } // Hizmet ile ilişki
 
-        [ForeignKey("Employee")]
-        public int EmployeeId { get; set; }
-        public Employee? Employee { get; set; }
+        [Required]
+        public int EmployeeId { get; set; } // Hizmeti gerçekleştiren çalışan
+        public required Employee Employee { get; set; } // Çalışan ile ilişki
     }
 }

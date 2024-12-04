@@ -6,14 +6,15 @@ namespace HairSalonManagement.Models
     {
         public int Id { get; set; }
         [Required]
-        public string Name { get; set; }
+        public required string Name { get; set; }
         [Required]
-        public decimal Price { get; set; }
+        public required decimal Price { get; set; }
         [Required]
-        public int Duration { get; set; }
+        public required int Duration { get; set; }
         [Required]
-        public int SalonId { get; set; }
-        [Required]
+        public required int SalonId { get; set; }
         public Salon Salon { get; set; }
+
+        public ICollection<EmployeeService>? EmployeeServices { get; set; }
     }
 }

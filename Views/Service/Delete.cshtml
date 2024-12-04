@@ -1,0 +1,18 @@
+@model HairSalonManagement.Models.Service
+
+<h2>Hizmeti Sil</h2>
+
+<div class="alert alert-danger">
+    <h4>Bu hizmeti silmek istediğinize emin misiniz?</h4>
+</div>
+
+<p><strong>Ad:</strong> @Model.Name</p>
+<p><strong>Ücret:</strong> @Model.Price.ToString("C")</p>
+<p><strong>Süre:</strong> @Model.Duration dakika</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="SalonId" />
+    <button type="submit" class="btn btn-danger">Sil</button>
+    <a asp-action="Index" asp-route-salonId="@Model.SalonId" class="btn btn-secondary">İptal</a>
+</form>

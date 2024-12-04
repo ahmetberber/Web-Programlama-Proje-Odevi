@@ -20,7 +20,7 @@ namespace HairSalonManagement.Controllers
             var appointments = _context.Appointments.Include(a => a.Employee);
             return View(await appointments.ToListAsync());
         }
-        
+
         [HttpGet]
         public IActionResult Create()
         {
@@ -34,17 +34,17 @@ namespace HairSalonManagement.Controllers
             if (!ModelState.IsValid)
             {
                 // Randevu alınacak çalışanların uygunluğunu kontrol et
-                var startTime = appointment.AppointmentDate.TimeOfDay;
+                var startTime = appointment.Date.TimeOfDay;
                 var endTime = startTime.Add(TimeSpan.FromMinutes(appointment.Duration));
 
                 var availableEmployees = _context.Employees
                     .Where(e => e.StartTime <= startTime && e.EndTime >= endTime) // Çalışma saatleri içinde
                     .Where(e => !_context.Appointments
-                        .Where(a => a.AppointmentDate.Date == appointment.AppointmentDate.Date) // Aynı gün
+                        .Where(a => a.Date.Date == appointment.Date.Date) // Aynı gün
                         .Where(a => a.EmployeeId == e.Id) // Aynı çalışan
                         .Any(a =>
-                            a.AppointmentDate.TimeOfDay < endTime && // Çakışma kontrolü
-                            a.AppointmentDate.TimeOfDay.Add(TimeSpan.FromMinutes(a.Duration)) > startTime
+                            a.Date.TimeOfDay < endTime && // Çakışma kontrolü
+                            a.Date.TimeOfDay.Add(TimeSpan.FromMinutes(a.Duration)) > startTime
                         ))
                     .ToList();
 
@@ -126,7 +126,6 @@ namespace HairSalonManagement.Controllers
                 return NotFound();
             }
 
-            appointment.IsConfirmed = true;
             _context.Update(appointment);
             await _context.SaveChangesAsync();
 

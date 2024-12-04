@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Web_Programlama_Proje_Odevi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241203114508_AddSalonAndService")]
-    partial class AddSalonAndService
+    [Migration("20241204104137_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,7 +33,7 @@ namespace Web_Programlama_Proje_Odevi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("AppointmentDate")
+                    b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Duration")
@@ -42,19 +42,19 @@ namespace Web_Programlama_Proje_Odevi.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsConfirmed")
-                        .HasColumnType("bit");
+                    b.Property<int>("SalonId")
+                        .HasColumnType("int");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Service")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
+
+                    b.HasIndex("SalonId");
+
+                    b.HasIndex("ServiceId");
 
                     b.ToTable("Appointments");
                 });
@@ -70,17 +70,9 @@ namespace Web_Programlama_Proje_Odevi.Migrations
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("time");
 
-                    b.Property<string>("Expertise")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SalonId")
                         .HasColumnType("int");
@@ -93,6 +85,21 @@ namespace Web_Programlama_Proje_Odevi.Migrations
                     b.HasIndex("SalonId");
 
                     b.ToTable("Employees");
+                });
+
+            modelBuilder.Entity("HairSalonManagement.Models.EmployeeService", b =>
+                {
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("EmployeeId", "ServiceId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("EmployeeServices");
                 });
 
             modelBuilder.Entity("HairSalonManagement.Models.Salon", b =>
@@ -116,6 +123,9 @@ namespace Web_Programlama_Proje_Odevi.Migrations
 
                     b.Property<TimeSpan>("OpeningTime")
                         .HasColumnType("time");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -147,7 +157,7 @@ namespace Web_Programlama_Proje_Odevi.Migrations
 
                     b.HasIndex("SalonId");
 
-                    b.ToTable("Service");
+                    b.ToTable("Services");
                 });
 
             modelBuilder.Entity("HairSalonManagement.Models.Appointment", b =>
@@ -155,21 +165,56 @@ namespace Web_Programlama_Proje_Odevi.Migrations
                     b.HasOne("HairSalonManagement.Models.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HairSalonManagement.Models.Salon", "Salon")
+                        .WithMany()
+                        .HasForeignKey("SalonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HairSalonManagement.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Employee");
+
+                    b.Navigation("Salon");
+
+                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("HairSalonManagement.Models.Employee", b =>
                 {
                     b.HasOne("HairSalonManagement.Models.Salon", "Salon")
-                        .WithMany()
+                        .WithMany("Employees")
                         .HasForeignKey("SalonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Salon");
+                });
+
+            modelBuilder.Entity("HairSalonManagement.Models.EmployeeService", b =>
+                {
+                    b.HasOne("HairSalonManagement.Models.Employee", "Employee")
+                        .WithMany("EmployeeServices")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HairSalonManagement.Models.Service", "Service")
+                        .WithMany("EmployeeServices")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("HairSalonManagement.Models.Service", b =>
@@ -183,9 +228,21 @@ namespace Web_Programlama_Proje_Odevi.Migrations
                     b.Navigation("Salon");
                 });
 
+            modelBuilder.Entity("HairSalonManagement.Models.Employee", b =>
+                {
+                    b.Navigation("EmployeeServices");
+                });
+
             modelBuilder.Entity("HairSalonManagement.Models.Salon", b =>
                 {
+                    b.Navigation("Employees");
+
                     b.Navigation("Services");
+                });
+
+            modelBuilder.Entity("HairSalonManagement.Models.Service", b =>
+                {
+                    b.Navigation("EmployeeServices");
                 });
 #pragma warning restore 612, 618
         }

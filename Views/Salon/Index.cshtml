@@ -22,6 +22,7 @@
                 <td>@salon.OpeningTime</td>
                 <td>@salon.ClosingTime</td>
                 <td>
+                    <a asp-action="Index" asp-route-salonId="@salon.Id" asp-controller="Service" class="btn btn-primary">Hizmetler</a>
                     <a asp-action="Edit" asp-route-id="@salon.Id" class="btn btn-warning">Düzenle</a>
                     <a asp-action="Delete" asp-route-id="@salon.Id" class="btn btn-danger">Sil</a>
                 </td>

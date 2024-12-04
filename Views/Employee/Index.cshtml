@@ -7,7 +7,6 @@
     <thead>
         <tr>
             <th>Ad</th>
-            <th>Uzmanlık</th>
             <th>Çalışma Saatleri</th>
             <th>Hizmetler</th>
             <th>İşlemler</th>
@@ -18,12 +17,11 @@
         {
             <tr>
                 <td>@employee.Name</td>
-                <td>@employee.Specialization</td>
                 <td>@employee.StartTime - @employee.EndTime</td>
                 <td>
-                    @foreach (var service in employee.Services)
+                    @foreach (var service in employee.EmployeeServices)
                     {
-                        <span>@service.Name</span><br />
+                        <span>@service.Service.Name</span><br />
                     }
                 </td>
                 <td>

@@ -9,11 +9,6 @@
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Specialization" class="control-label">Uzmanlık</label>
-        <input asp-for="Specialization" class="form-control" />
-        <span asp-validation-for="Specialization" class="text-danger"></span>
-    </div>
-    <div class="form-group">
         <label asp-for="StartTime" class="control-label">Çalışma Başlangıç Saati</label>
         <input asp-for="StartTime" type="time" class="form-control" />
         <span asp-validation-for="StartTime" class="text-danger"></span>
@@ -25,7 +20,12 @@
     </div>
     <div class="form-group">
         <label>Hizmetler</label>
-        <select asp-for="Services" class="form-control" multiple asp-items="ViewBag.Services"></select>
+        <select asp-for="EmployeeServices" class="form-control" multiple>
+            @foreach (var service in ViewBag.Services as List<HairSalonManagement.Models.Service>)
+            {
+                <option value="@service.Id">@service.Name</option>
+            }
+        </select>
     </div>
     <button type="submit" class="btn btn-primary">Kaydet</button>
     <a asp-action="Index" class="btn btn-secondary">İptal</a>

@@ -15,10 +15,12 @@ namespace HairSalonManagement.Controllers
             _context = context;
         }
 
-        // Tüm çalışanları listele
         public async Task<IActionResult> Index()
         {
-            var employees = await _context.Employees.Include(e => e.Services).ToListAsync();
+
+            var employees = await _context.Employees
+                .Include(e => e.EmployeeServices)
+                .ThenInclude(es => es.Service).ToListAsync();
             return View(employees);
         }
 
@@ -40,7 +42,8 @@ namespace HairSalonManagement.Controllers
                 return View(employee);
             }
 
-            employee.Services = _context.Services.Where(s => selectedServices.Contains(s.Id)).ToList();
+            // employee.Services = _context.Services.Where(s => selectedServices.Contains(s.Id)).ToList();
+            employee.EmployeeServices = selectedServices.Select(s => new EmployeeService { EmployeeId = employee.Id, ServiceId = s }).ToList();
 
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
@@ -54,7 +57,8 @@ namespace HairSalonManagement.Controllers
             if (id == null) return NotFound();
 
             var employee = await _context.Employees
-                .Include(e => e.Services)
+                .Include(e => e.EmployeeServices)
+                .ThenInclude(es => es.Service)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
             if (employee == null) return NotFound();
@@ -74,18 +78,18 @@ namespace HairSalonManagement.Controllers
             }
 
             var existingEmployee = await _context.Employees
-                .Include(e => e.Services)
+                .Include(e => e.EmployeeServices)
+                .ThenInclude(es => es.Service)
                 .FirstOrDefaultAsync(e => e.Id == employee.Id);
 
             if (existingEmployee == null) return NotFound();
 
             existingEmployee.Name = employee.Name;
-            existingEmployee.Specialization = employee.Specialization;
             existingEmployee.StartTime = employee.StartTime;
             existingEmployee.EndTime = employee.EndTime;
 
-            existingEmployee.Services.Clear();
-            existingEmployee.Services = _context.Services.Where(s => selectedServices.Contains(s.Id)).ToList();
+            existingEmployee.EmployeeServices.Clear();
+            existingEmployee.EmployeeServices = selectedServices.Select(s => new EmployeeService { EmployeeId = employee.Id, ServiceId = s }).ToList();
 
             _context.Update(existingEmployee);
             await _context.SaveChangesAsync();
@@ -99,7 +103,8 @@ namespace HairSalonManagement.Controllers
             if (id == null) return NotFound();
 
             var employee = await _context.Employees
-                .Include(e => e.Services)
+                .Include(e => e.EmployeeServices)
+                .ThenInclude(es => es.Service)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
             if (employee == null) return NotFound();
@@ -127,7 +132,8 @@ namespace HairSalonManagement.Controllers
             if (id == null) return NotFound();
 
             var employee = await _context.Employees
-                .Include(e => e.Services)
+                .Include(e => e.EmployeeServices)
+                .ThenInclude(es => es.Service)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
             if (employee == null) return NotFound();
