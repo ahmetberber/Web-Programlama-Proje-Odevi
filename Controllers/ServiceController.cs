@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HairSalonManagement.Data;
 using HairSalonManagement.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HairSalonManagement.Controllers
 {
+    [Authorize]
     public class ServiceController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -14,7 +16,6 @@ namespace HairSalonManagement.Controllers
             _context = context;
         }
 
-        // Belirli bir salon için hizmetleri listele
         public async Task<IActionResult> Index(int salonId)
         {
             var salon = await _context.Salons
@@ -29,7 +30,6 @@ namespace HairSalonManagement.Controllers
             return View(salon.Services);
         }
 
-        // Yeni hizmet oluşturma formu
         [HttpGet]
         public IActionResult Create(int salonId)
         {
@@ -37,7 +37,6 @@ namespace HairSalonManagement.Controllers
             return View();
         }
 
-        // Yeni hizmet kaydet
         [HttpPost]
         public async Task<IActionResult> Create(Service service)
         {
@@ -52,7 +51,6 @@ namespace HairSalonManagement.Controllers
             return RedirectToAction(nameof(Index), new { salonId = service.SalonId });
         }
 
-        // Düzenleme formu
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -62,7 +60,6 @@ namespace HairSalonManagement.Controllers
             return View(service);
         }
 
-        // Düzenlemeyi kaydet
         [HttpPost]
         public async Task<IActionResult> Edit(Service service)
         {
@@ -76,7 +73,6 @@ namespace HairSalonManagement.Controllers
             return RedirectToAction(nameof(Index), new { salonId = service.SalonId });
         }
 
-        // Silme işlemi öncesi onay sayfasını getir
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {

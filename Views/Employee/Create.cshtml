@@ -2,9 +2,19 @@
 
 <h2>Yeni Çalışan Ekle</h2>
 
-<form asp-action="Create" method="post">
+<form asp-action="CreatePost" method="post">
+    <input type="hidden" asp-for="SalonId" value="@ViewBag.SalonId" />
+    @if (ViewBag.Errors != null) {
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var error in ViewBag.Errors){
+                    <li>@error</li>
+                }
+            </ul>
+        </div>
+    }
     <div class="form-group">
-        <label asp-for="Name" class="control-label">Ad</label>
+        <label asp-for="Name" class="control-label">Ad Soyad</label>
         <input asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
@@ -21,12 +31,19 @@
     <div class="form-group">
         <label>Hizmetler</label>
         <select asp-for="EmployeeServices" class="form-control" multiple>
-            @foreach (var service in ViewBag.Services as List<HairSalonManagement.Models.Service>)
+            @if (ViewBag.Services != null)
             {
-                <option value="@service.Id">@service.Name</option>
+                var services = ViewBag.Services as IEnumerable<HairSalonManagement.Models.Service>;
+                if (services != null)
+                {
+                    foreach (var service in services)
+                    {
+                        <option value="@service.Id">@service.Name</option>
+                    }
+                }
             }
         </select>
     </div>
     <button type="submit" class="btn btn-primary">Kaydet</button>
-    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+    <a asp-action="Index" asp-route-salonId="@ViewBag.SalonId" class="btn btn-secondary">İptal</a>
 </form>

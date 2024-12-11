@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using HairSalonManagement.Services;
-using System.Drawing; // Görüntü işleme için gerekli (System.Drawing.Common NuGet paketi gerekebilir)
-using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HairSalonManagement.Controllers
 {
+    [Authorize]
     public class AiController : Controller
     {
         private readonly AiService _aiService;

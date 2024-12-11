@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using HairSalonManagement.Models;
 
 namespace HairSalonManagement.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -14,7 +15,6 @@ namespace HairSalonManagement.Data
         public required DbSet<EmployeeService> EmployeeServices { get; set; }
         public required DbSet<Appointment> Appointments { get; set; }
         public required DbSet<Service> Services { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -32,25 +32,25 @@ namespace HairSalonManagement.Data
                 .HasOne(es => es.Service)
                 .WithMany(s => s.EmployeeServices)
                 .HasForeignKey(es => es.ServiceId)
-                .OnDelete(DeleteBehavior.Restrict); // Burada kısıtlamayı belirtiyoruz
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.Service)
                 .WithMany()
                 .HasForeignKey(a => a.ServiceId)
-                .OnDelete(DeleteBehavior.Restrict); // Burada kısıtlamayı belirtiyoruz
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.Salon)
                 .WithMany()
                 .HasForeignKey(a => a.SalonId)
-                .OnDelete(DeleteBehavior.Restrict); // Burada kısıtlamayı belirtiyoruz
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.Employee)
                 .WithMany()
                 .HasForeignKey(a => a.EmployeeId)
-                .OnDelete(DeleteBehavior.Restrict); // Burada kısıtlamayı belirtiyoruz
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

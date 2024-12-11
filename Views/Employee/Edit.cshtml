@@ -2,7 +2,8 @@
 
 <h2>Çalışan Düzenle</h2>
 
-<form asp-action="Edit" method="post">
+<form asp-action="EditPost" method="post">
+    <input type="hidden" asp-for="SalonId" value="@ViewBag.SalonId" />
     <input type="hidden" asp-for="Id" />
     <div class="form-group">
         <label asp-for="Name" class="control-label">Ad</label>
@@ -22,12 +23,20 @@
     <div class="form-group">
         <label>Hizmetler</label>
         <select asp-for="EmployeeServices" class="form-control" multiple>
-            @foreach (var service in ViewBag.Services as List<HairSalonManagement.Models.Service>)
+            @if (ViewBag.Services != null)
             {
-                <option value="@service.Id">@service.Name</option>
+                var services = ViewBag.Services as IEnumerable<HairSalonManagement.Models.Service>;
+                if (services != null)
+                {
+                    foreach (var service in services)
+                    {
+                        var isSelected = Model.EmployeeServices.Any(es => es.ServiceId == service.Id);
+                        <option value="@service.Id" selected="@(isSelected ? "selected" : null)">@service.Name</option>
+                    }
+                }
             }
         </select>
     </div>
     <button type="submit" class="btn btn-primary">Kaydet</button>
-    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+    <a asp-action="Index" asp-route-salonId="@Model.SalonId" class="btn btn-secondary">İptal</a>
 </form>

@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HairSalonManagement.Data;
 using HairSalonManagement.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HairSalonManagement.Controllers
 {
+    [Authorize]
     public class SalonController : Controller
     {
         private readonly ApplicationDbContext _context;

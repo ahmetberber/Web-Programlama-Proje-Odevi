@@ -13,7 +13,6 @@ namespace HairSalonManagement.Models
         public TimeSpan EndTime { get; set; }
         [Required]
         public int SalonId { get; set; }
-        public Salon Salon { get; set; } // Salon ile ilişki
-        public ICollection<EmployeeService> EmployeeServices { get; set; }
+        public required ICollection<EmployeeService> EmployeeServices { get; set; }
     }
 }

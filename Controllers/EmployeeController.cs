@@ -2,10 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HairSalonManagement.Data;
 using HairSalonManagement.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HairSalonManagement.Controllers
 {
+    [Authorize]
     public class EmployeeController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -15,42 +16,54 @@ namespace HairSalonManagement.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int salonId)
         {
+            var salon = await _context.Salons
+                .Include(e => e.Employees)
+                .FirstOrDefaultAsync(s => s.Id == salonId);
 
-            var employees = await _context.Employees
-                .Include(e => e.EmployeeServices)
-                .ThenInclude(es => es.Service).ToListAsync();
-            return View(employees);
+            if (salon == null) return NotFound();
+
+            ViewBag.SalonName = salon.Name;
+            ViewBag.SalonId = salon.Id;
+
+            if(salon.Employees != null) {
+                foreach (var employee in salon.Employees)
+                {
+                    employee.EmployeeServices = await _context.EmployeeServices
+                        .Where(es => es.EmployeeId == employee.Id)
+                        .Include(es => es.Service)
+                        .ToListAsync();
+                }
+            }
+
+            return View(salon.Employees);
         }
 
-        // Yeni çalışan oluşturma formu
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult Create(int salonId)
         {
-            ViewBag.Services = new SelectList(_context.Services, "Id", "Name");
+            ViewBag.Services = _context.Services.Where(s => s.SalonId == salonId).ToList();
+            ViewBag.SalonId = salonId;
             return View();
         }
 
-        // Yeni çalışan kaydet
         [HttpPost]
-        public async Task<IActionResult> Create(Employee employee, int[] selectedServices)
+        public async Task<IActionResult> CreatePost(Employee employee, int[] EmployeeServices)
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.Services = new SelectList(_context.Services, "Id", "Name");
+                ViewBag.Services = _context.Services.Where(s => s.SalonId == employee.SalonId).ToList();
+                ViewBag.Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
                 return View(employee);
             }
 
-            // employee.Services = _context.Services.Where(s => selectedServices.Contains(s.Id)).ToList();
-            employee.EmployeeServices = selectedServices.Select(s => new EmployeeService { EmployeeId = employee.Id, ServiceId = s }).ToList();
-
+            employee.EmployeeServices = EmployeeServices.Select(s => new EmployeeService { EmployeeId = employee.Id, ServiceId = s }).ToList();
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { salonId = employee.SalonId });
         }
 
-        // Düzenleme formunu getir
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -63,17 +76,17 @@ namespace HairSalonManagement.Controllers
 
             if (employee == null) return NotFound();
 
-            ViewBag.Services = new SelectList(_context.Services, "Id", "Name");
+            ViewBag.Services = _context.Services.Where(s => s.SalonId == employee.SalonId).ToList();
+            ViewBag.SalonId = employee.SalonId;
             return View(employee);
         }
 
-        // Düzenleme kaydet
         [HttpPost]
-        public async Task<IActionResult> Edit(Employee employee, int[] selectedServices)
+        public async Task<IActionResult> EditPost(Employee employee, int[] EmployeeServices)
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.Services = new SelectList(_context.Services, "Id", "Name");
+                ViewBag.Services = _context.Services.Where(s => s.SalonId == employee.SalonId).ToList();
                 return View(employee);
             }
 
@@ -89,14 +102,13 @@ namespace HairSalonManagement.Controllers
             existingEmployee.EndTime = employee.EndTime;
 
             existingEmployee.EmployeeServices.Clear();
-            existingEmployee.EmployeeServices = selectedServices.Select(s => new EmployeeService { EmployeeId = employee.Id, ServiceId = s }).ToList();
+            existingEmployee.EmployeeServices = EmployeeServices.Select(s => new EmployeeService { EmployeeId = employee.Id, ServiceId = s }).ToList();
 
             _context.Update(existingEmployee);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { salonId = employee.SalonId });
         }
 
-        // Silme işlemi öncesi onay sayfasını getir
         [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -112,33 +124,19 @@ namespace HairSalonManagement.Controllers
             return View(employee);
         }
 
-        // Silme işlemini gerçekleştir
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var employee = await _context.Employees.FindAsync(id);
             if (employee != null)
             {
+                var SalonId = employee.SalonId;
                 _context.Employees.Remove(employee);
                 await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index), new { salonId = SalonId });
             }
-            return RedirectToAction(nameof(Index));
-        }
 
-        // Detayları görüntüle
-        [HttpGet]
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null) return NotFound();
-
-            var employee = await _context.Employees
-                .Include(e => e.EmployeeServices)
-                .ThenInclude(es => es.Service)
-                .FirstOrDefaultAsync(e => e.Id == id);
-
-            if (employee == null) return NotFound();
-
-            return View(employee);
+            return NotFound();
         }
     }
 }

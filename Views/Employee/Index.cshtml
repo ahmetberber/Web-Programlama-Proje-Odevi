@@ -1,8 +1,7 @@
 @model IEnumerable<HairSalonManagement.Models.Employee>
 
-<h2>Çalışanlar</h2>
-<a asp-action="Create" class="btn btn-primary">Yeni Çalışan Ekle</a>
-
+<h2>@ViewBag.SalonName - Çalışanlar</h2>
+<a asp-action="Index" asp-controller="Salon" class="btn btn-secondary">Salonlar</a>
 <table class="table">
     <thead>
         <tr>
@@ -19,9 +18,15 @@
                 <td>@employee.Name</td>
                 <td>@employee.StartTime - @employee.EndTime</td>
                 <td>
-                    @foreach (var service in employee.EmployeeServices)
+                    @if(employee.EmployeeServices != null)
                     {
-                        <span>@service.Service.Name</span><br />
+                        @foreach (var service in employee.EmployeeServices)
+                        {
+                            @if (service.Service != null)
+                            {
+                                <span>@service.Service.Name</span><br />
+                            }
+                        }
                     }
                 </td>
                 <td>
@@ -32,3 +37,5 @@
         }
     </tbody>
 </table>
+
+<a asp-action="Create" asp-route-salonId="@ViewBag.SalonId" class="btn btn-primary">Yeni Çalışan Ekle</a>

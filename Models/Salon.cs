@@ -7,7 +7,7 @@ namespace HairSalonManagement.Models
         ErkekKuaforu,
         GuzellikSalonu
     }
-    
+
     public class Salon
     {
         public int Id { get; set; }
@@ -15,7 +15,7 @@ namespace HairSalonManagement.Models
         public required string Address { get; set; }
         public TimeSpan OpeningTime { get; set; }
         public TimeSpan ClosingTime { get; set; }
-        public SalonType Type { get; set; } // Erkek Kuaförü veya Güzellik Salonu
+        public SalonType Type { get; set; }
         public ICollection<Service>? Services { get; set; }
         public ICollection<Employee>? Employees { get; set; }
     }

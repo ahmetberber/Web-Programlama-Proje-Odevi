@@ -13,8 +13,6 @@ namespace HairSalonManagement.Models
         public required int Duration { get; set; }
         [Required]
         public required int SalonId { get; set; }
-        public Salon Salon { get; set; }
-
         public ICollection<EmployeeService>? EmployeeServices { get; set; }
     }
 }
