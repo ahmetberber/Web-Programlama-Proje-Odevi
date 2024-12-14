@@ -12,7 +12,7 @@ namespace HairSalonManagement.Services
         {
             _httpClient = new HttpClient
             {
-                Timeout = TimeSpan.FromSeconds(30) // Maksimum bekleme süresi
+                Timeout = TimeSpan.FromSeconds(60)
             };
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
         }
@@ -23,7 +23,7 @@ namespace HairSalonManagement.Services
 
             var payload = new
             {
-                model = "gpt-4o-mini", // veya kullanmak istediğiniz model
+                model = "gpt-4o-mini",
                 messages = new[]
                 {
                     new
@@ -34,7 +34,7 @@ namespace HairSalonManagement.Services
                             new
                             {
                                 type = "text",
-                                text = "Görsele göre saç kesim modelleri veya saç rengi önderileri alabilir miyim?"
+                                text = "Görsele göre en uygun saç modelini önerir misiniz?"
                             },
                             new
                             {

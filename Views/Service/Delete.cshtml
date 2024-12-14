@@ -1,4 +1,5 @@
 @model HairSalonManagement.Models.Service
+@using System.Globalization
 
 <h2>Hizmeti Sil</h2>
 
@@ -7,7 +8,7 @@
 </div>
 
 <p><strong>Ad:</strong> @Model.Name</p>
-<p><strong>Ücret:</strong> @Model.Price.ToString("C")</p>
+<p><strong>Ücret:</strong> @Model.Price.ToString("C", new CultureInfo("tr-TR"))</p>
 <p><strong>Süre:</strong> @Model.Duration dakika</p>
 
 <form asp-action="Delete" method="post">

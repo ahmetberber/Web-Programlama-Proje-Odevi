@@ -6,9 +6,10 @@
 <table class="table">
     <thead>
         <tr>
+            <th>Salon</th>
+            <th>Çalışan</th>
             <th>Hizmet</th>
             <th>Tarih ve Saat</th>
-            <th>Süre</th>
             <th>İşlem</th>
         </tr>
     </thead>
@@ -16,11 +17,11 @@
         @foreach (var appointment in Model)
         {
             <tr>
-                <td>@appointment.Service</td>
+                <td>@appointment.Salon?.Name</td>
+                <td>@appointment.Employee?.Name</td>
+                <td>@appointment.Service?.Name</td>
                 <td>@appointment.Date.ToString("g")</td>
-                <td>@appointment.Duration dakika</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@appointment.Id" class="btn btn-info">Detaylar</a>
                     <a asp-action="Delete" asp-route-id="@appointment.Id" class="btn btn-danger">Sil</a>
                     <a asp-action="Edit" asp-route-id="@appointment.Id" class="btn btn-warning">Düzenle</a>
                 </td>

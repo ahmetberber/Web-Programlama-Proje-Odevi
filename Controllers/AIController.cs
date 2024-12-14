@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HairSalonManagement.Services;
 using Microsoft.AspNetCore.Authorization;
+using Markdig;
 
 namespace HairSalonManagement.Controllers
 {
@@ -37,7 +38,10 @@ namespace HairSalonManagement.Controllers
 
                 var suggestion = await _aiService.AnalyzeImageAsync(imageBytes);
 
-                ViewBag.Suggestion = suggestion!;
+
+                var htmlResponse = Markdown.ToHtml(suggestion);
+                ViewBag.Suggestion = htmlResponse;
+
                 return View();
             }
             catch (Exception ex)

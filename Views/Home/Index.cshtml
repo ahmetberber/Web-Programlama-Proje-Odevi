@@ -8,26 +8,23 @@
 </div>
 
 <div class="container mt-5">
-    <div class="row text-center">
-        <!-- Salonlar Bölümü -->
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Salonlar</h5>
-                    <p class="card-text">Kuaför ve berber salonlarınızı ekleyin ve yönetin.</p>
-                    <a asp-controller="Salon" asp-action="Index" class="btn btn-primary">Salonları Görüntüle</a>
-                    <a asp-controller="Salon" asp-action="Create" class="btn btn-outline-primary">Salon Ekle</a>
+    <div class="row text-center justify-content-center">
+        @if (User.IsInRole("admin"))
+        {
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Salonlar</h5>
+                        <a asp-controller="Salon" asp-action="Index" class="btn btn-primary">Salonları Görüntüle</a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <!-- Randevular Bölümü -->
+        }
         <div class="col-md-4">
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Randevular</h5>
-                    <p class="card-text">Müşterileriniz için randevuları yönetin.</p>
                     <a asp-controller="Appointment" asp-action="Index" class="btn btn-warning">Randevuları Görüntüle</a>
-                    <a asp-controller="Appointment" asp-action="Create" class="btn btn-outline-warning">Randevu Ekle</a>
                 </div>
             </div>
         </div>

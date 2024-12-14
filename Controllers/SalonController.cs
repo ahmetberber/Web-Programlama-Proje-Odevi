@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HairSalonManagement.Controllers
 {
-    [Authorize]
+    [Authorize (Roles = "admin")]
     public class SalonController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -118,26 +118,6 @@ namespace HairSalonManagement.Controllers
             }
 
             return RedirectToAction(nameof(Index));
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var salon = await _context.Salons
-                .Include(s => s.Services)
-                .FirstOrDefaultAsync(s => s.Id == id);
-
-            if (salon == null)
-            {
-                return NotFound();
-            }
-
-            return View(salon);
         }
     }
 }

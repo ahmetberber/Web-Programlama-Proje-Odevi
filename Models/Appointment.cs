@@ -8,20 +8,21 @@ namespace HairSalonManagement.Models
         public int Id { get; set; }
 
         [Required]
-        public DateTime Date { get; set; } // Randevu tarihi ve saati
+        public DateTime Date { get; set; }
 
         [Required]
-        public int Duration { get; set; } // Randevu süresi (dakika)
-
-        public int SalonId { get; set; } // Randevunun yapıldığı salon
-        public required Salon Salon { get; set; } // Salon ile ilişki
+        public int SalonId { get; set; }
+        public Salon? Salon { get; set; }
 
         [Required]
-        public int ServiceId { get; set; } // Alınacak hizmet
-        public required Service Service { get; set; } // Hizmet ile ilişki
+        public int ServiceId { get; set; }
+        public Service? Service { get; set; }
 
         [Required]
-        public int EmployeeId { get; set; } // Hizmeti gerçekleştiren çalışan
-        public required Employee Employee { get; set; } // Çalışan ile ilişki
+        public int EmployeeId { get; set; }
+        public Employee? Employee { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+        public required string CreatedBy { get; set; }
     }
 }

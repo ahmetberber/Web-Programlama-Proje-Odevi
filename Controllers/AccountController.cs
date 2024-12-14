@@ -11,11 +11,13 @@ namespace HairSalonManagement.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -37,7 +39,7 @@ namespace HairSalonManagement.Controllers
                     var result = await _signInManager.PasswordSignInAsync(user.Email!, model.Password, isPersistent: false, lockoutOnFailure: false);
                     if (result.Succeeded)
                     {
-                        
+
                         return Redirect(returnUrl ?? "/");
                     }
                     if (result.IsLockedOut)
@@ -77,6 +79,12 @@ namespace HairSalonManagement.Controllers
 
                 if (result.Succeeded)
                 {
+                    if (!await _roleManager.RoleExistsAsync("user"))
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole("user"));
+                    }
+
+                    await _userManager.AddToRoleAsync(user, "user");
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Index", "Home");
                 }
@@ -94,6 +102,12 @@ namespace HairSalonManagement.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }

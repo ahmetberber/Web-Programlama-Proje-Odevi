@@ -1,4 +1,5 @@
 @model IEnumerable<HairSalonManagement.Models.Service>
+@using System.Globalization
 
 <h2>@ViewBag.SalonName - Hizmetler</h2>
 <a asp-action="Index" asp-controller="Salon" class="btn btn-secondary">Salonlar</a>
@@ -16,7 +17,7 @@
         {
             <tr>
                 <td>@service.Name</td>
-                <td>@service.Price.ToString("C")</td>
+                <td>@service.Price.ToString("C", new CultureInfo("tr-TR"))</td>
                 <td>@service.Duration dakika</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@service.Id" class="btn btn-warning">Düzenle</a>

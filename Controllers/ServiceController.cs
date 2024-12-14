@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace HairSalonManagement.Controllers
 {
-    [Authorize]
+    [Authorize (Roles = "admin")]
     public class ServiceController : Controller
     {
         private readonly ApplicationDbContext _context;

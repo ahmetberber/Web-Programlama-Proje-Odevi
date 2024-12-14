@@ -19,40 +19,69 @@ namespace HairSalonManagement.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var appointments = _context.Appointments.Include(a => a.Employee);
+            var appointments = _context.Appointments
+            .Include(a => a.Employee)
+            .Include(a => a.Service)
+            .Include(a => a.Salon);
+
+            if(!User.IsInRole("admin"))
+            {
+                appointments.Where(a => a.CreatedBy == User!.Identity!.Name);
+            }
+
             return View(await appointments.ToListAsync());
         }
 
         [HttpGet]
         public IActionResult Create()
         {
-            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Name");
+            ViewData["SalonList"] = new SelectList(_context.Salons, "Id", "Name");
             return View();
         }
 
         [HttpPost]
         public IActionResult Create(Appointment appointment)
         {
+            ViewData["SalonList"] = new SelectList(_context.Salons, "Id", "Name");
+            ViewData["ServiceList"] = new SelectList(_context.Services.Where(s => s.SalonId == appointment.SalonId), "Id", "Name");
+            ViewData["EmployeeList"] = new SelectList(_context.Employees.Where(e => e.SalonId == appointment.SalonId && e.EmployeeServices.Any(s => s.ServiceId == appointment.ServiceId)), "Id", "Name");
+
             if (!ModelState.IsValid)
             {
-                // Randevu alınacak çalışanların uygunluğunu kontrol et
-                var startTime = appointment.Date.TimeOfDay;
-                var endTime = startTime.Add(TimeSpan.FromMinutes(appointment.Duration));
-
-                var availableEmployees = _context.Employees
-                    .Where(e => e.StartTime <= startTime && e.EndTime >= endTime) // Çalışma saatleri içinde
-                    .Where(e => !_context.Appointments
-                        .Where(a => a.Date.Date == appointment.Date.Date) // Aynı gün
-                        .Where(a => a.EmployeeId == e.Id) // Aynı çalışan
-                        .Any(a =>
-                            a.Date.TimeOfDay < endTime && // Çakışma kontrolü
-                            a.Date.TimeOfDay.Add(TimeSpan.FromMinutes(a.Duration)) > startTime
-                        ))
-                    .ToList();
-
-                ViewData["EmployeeId"] = new SelectList(availableEmployees, "Id", "Name");
+                foreach (var modelState in ViewData.ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.ErrorMessage);
+                    }
+                }
                 return View(appointment);
             }
+
+            appointment.Salon = _context.Salons.Find(appointment.SalonId)!;
+            appointment.Service = _context.Services.Find(appointment.ServiceId)!;
+            appointment.Employee = _context.Employees.Find(appointment.EmployeeId)!;
+
+            var startTime = appointment.Date.TimeOfDay;
+            var endTime = startTime.Add(TimeSpan.FromMinutes(appointment.Service.Duration));
+
+            /* check if given salon, service and employee is available on that date */
+            var checkAvailability = _context.Appointments
+                .Where(a => a.Date == appointment.Date)
+                .Where(a => a.EmployeeId == appointment.EmployeeId)
+                .Where(a => a.ServiceId == appointment.ServiceId)
+                .AsEnumerable()
+                .Any(a =>
+                    a.Date.TimeOfDay < endTime &&
+                    a.Service != null && a.Date.TimeOfDay.Add(TimeSpan.FromMinutes(a.Service.Duration)) > startTime
+                );
+
+            if (checkAvailability)
+            {
+                ModelState.AddModelError(string.Empty, "Employee is not available at that time.");
+                return View(appointment);
+            }
+
 
             _context.Appointments.Add(appointment);
             _context.SaveChanges();
@@ -71,16 +100,54 @@ namespace HairSalonManagement.Controllers
             {
                 return NotFound();
             }
-            ViewData["EmployeeId"] = new SelectList(_context.Employees, "Id", "Name", appointment.EmployeeId);
+
+            ViewBag.EmployeeList = new SelectList(_context.Employees, "Id", "Name");
+            ViewBag.SalonList = new SelectList(_context.Salons, "Id", "Name");
+            ViewBag.ServiceList = new SelectList(_context.Services, "Id", "Name");
             return View(appointment);
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(Appointment appointment)
         {
+            ViewData["SalonList"] = new SelectList(_context.Salons, "Id", "Name");
+            ViewData["ServiceList"] = new SelectList(_context.Services.Where(s => s.SalonId == appointment.SalonId), "Id", "Name");
+            ViewData["EmployeeList"] = new SelectList(_context.Employees.Where(e => e.SalonId == appointment.SalonId && e.EmployeeServices.Any(s => s.ServiceId == appointment.ServiceId)), "Id", "Name");
+
             if (!ModelState.IsValid)
             {
-                ViewBag.EmployeeList = new SelectList(_context.Employees, "Id", "Name");
+                foreach (var modelState in ViewData.ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.ErrorMessage);
+                    }
+                }
+                return View(appointment);
+            }
+
+            appointment.Salon = _context.Salons.Find(appointment.SalonId)!;
+            appointment.Service = _context.Services.Find(appointment.ServiceId)!;
+            appointment.Employee = _context.Employees.Find(appointment.EmployeeId)!;
+
+            var startTime = appointment.Date.TimeOfDay;
+            var endTime = startTime.Add(TimeSpan.FromMinutes(appointment.Service.Duration));
+
+            /* check if given salon, service and employee is available on that date */
+            var checkAvailability = _context.Appointments
+                .Where(a => a.Date == appointment.Date)
+                .Where(a => a.EmployeeId == appointment.EmployeeId)
+                .Where(a => a.ServiceId == appointment.ServiceId)
+                .Where(a => a.Id != appointment.Id)
+                .AsEnumerable()
+                .Any(a =>
+                    a.Date.TimeOfDay < endTime &&
+                    a.Service != null && a.Date.TimeOfDay.Add(TimeSpan.FromMinutes(a.Service.Duration)) > startTime
+                );
+
+            if (checkAvailability)
+            {
+                ModelState.AddModelError(string.Empty, "Employee is not available at that time.");
                 return View(appointment);
             }
 
@@ -100,6 +167,9 @@ namespace HairSalonManagement.Controllers
 
             if (appointment == null) return NotFound();
 
+            appointment.Employee = await _context.Employees.FindAsync(appointment.EmployeeId);
+            appointment.Service = await _context.Services.FindAsync(appointment.ServiceId);
+            appointment.Salon = await _context.Salons.FindAsync(appointment.SalonId);
             return View(appointment);
         }
 
@@ -135,17 +205,20 @@ namespace HairSalonManagement.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> TakeSalonServices(int salonId)
         {
-            if (id == null) return NotFound();
+            var services = await _context.Services.Where(s => s.SalonId == salonId).ToListAsync();
+            return Json(services);
+        }
 
-            var appointment = await _context.Appointments
-                .Include(a => a.Employee)
-                .FirstOrDefaultAsync(a => a.Id == id);
-
-            if (appointment == null) return NotFound();
-
-            return View(appointment);
+        [HttpGet]
+        public async Task<IActionResult> TakeSalonEmployeesWithServices(int salonId, int serviceId)
+        {
+            var employees = await _context.Employees
+                .Where(e => e.SalonId == salonId)
+                .Where(e => e.EmployeeServices.Any(s => s.ServiceId == serviceId))
+                .ToListAsync();
+            return Json(employees);
         }
     }
 }

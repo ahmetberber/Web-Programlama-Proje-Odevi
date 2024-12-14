@@ -7,9 +7,10 @@
 </div>
 
 <div>
-    <h5>@Model.Service</h5>
+    <p><strong>Salon:</strong> @Model.Salon.Name</p>
+    <p><strong>Hizmet:</strong> @Model.Service.Name</p>
     <p><strong>Çalışan:</strong> @Model.Employee.Name</p>
-    <p><strong>Tarih ve Saat:</strong> @Model.Date.ToString("g")</p>
+    <p><strong>Tarih:</strong> @Model.Date.ToString("g")</p>
 </div>
 
 <form asp-action="Delete" method="post">
