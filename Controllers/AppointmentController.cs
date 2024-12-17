@@ -61,27 +61,19 @@ namespace HairSalonManagement.Controllers
             appointment.Salon = _context.Salons.Find(appointment.SalonId)!;
             appointment.Service = _context.Services.Find(appointment.ServiceId)!;
             appointment.Employee = _context.Employees.Find(appointment.EmployeeId)!;
-
             var startTime = appointment.Date.TimeOfDay;
             var endTime = startTime.Add(TimeSpan.FromMinutes(appointment.Service.Duration));
-
-            /* check if given salon, service and employee is available on that date */
-            var checkAvailability = _context.Appointments
-                .Where(a => a.Date == appointment.Date)
-                .Where(a => a.EmployeeId == appointment.EmployeeId)
-                .Where(a => a.ServiceId == appointment.ServiceId)
-                .AsEnumerable()
+            var checkAvailability = _context.Appointments.Where(a => a.Date == appointment.Date)
+                .Where(a => a.EmployeeId == appointment.EmployeeId).AsEnumerable()
                 .Any(a =>
                     a.Date.TimeOfDay < endTime &&
-                    a.Service != null && a.Date.TimeOfDay.Add(TimeSpan.FromMinutes(a.Service.Duration)) > startTime
+                    a.Date.TimeOfDay.Add(TimeSpan.FromMinutes(a.Service!.Duration)) > startTime
                 );
 
-            if (checkAvailability)
-            {
+            if (checkAvailability) {
                 ModelState.AddModelError(string.Empty, "Employee is not available at that time.");
                 return View(appointment);
             }
-
 
             _context.Appointments.Add(appointment);
             _context.SaveChanges();
@@ -129,24 +121,16 @@ namespace HairSalonManagement.Controllers
             appointment.Salon = _context.Salons.Find(appointment.SalonId)!;
             appointment.Service = _context.Services.Find(appointment.ServiceId)!;
             appointment.Employee = _context.Employees.Find(appointment.EmployeeId)!;
-
             var startTime = appointment.Date.TimeOfDay;
             var endTime = startTime.Add(TimeSpan.FromMinutes(appointment.Service.Duration));
-
-            /* check if given salon, service and employee is available on that date */
-            var checkAvailability = _context.Appointments
-                .Where(a => a.Date == appointment.Date)
-                .Where(a => a.EmployeeId == appointment.EmployeeId)
-                .Where(a => a.ServiceId == appointment.ServiceId)
-                .Where(a => a.Id != appointment.Id)
-                .AsEnumerable()
+            var checkAvailability = _context.Appointments.Where(a => a.Date == appointment.Date)
+                .Where(a => a.EmployeeId == appointment.EmployeeId).AsEnumerable()
                 .Any(a =>
                     a.Date.TimeOfDay < endTime &&
-                    a.Service != null && a.Date.TimeOfDay.Add(TimeSpan.FromMinutes(a.Service.Duration)) > startTime
+                    a.Date.TimeOfDay.Add(TimeSpan.FromMinutes(a.Service!.Duration)) > startTime
                 );
 
-            if (checkAvailability)
-            {
+            if (checkAvailability) {
                 ModelState.AddModelError(string.Empty, "Employee is not available at that time.");
                 return View(appointment);
             }

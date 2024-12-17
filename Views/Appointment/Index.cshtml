@@ -9,6 +9,7 @@
             <th>Salon</th>
             <th>Çalışan</th>
             <th>Hizmet</th>
+            <th>Süre</th>
             <th>Tarih ve Saat</th>
             <th>İşlem</th>
         </tr>
@@ -20,6 +21,7 @@
                 <td>@appointment.Salon?.Name</td>
                 <td>@appointment.Employee?.Name</td>
                 <td>@appointment.Service?.Name</td>
+                <td>@appointment.Service?.Duration dk</td>
                 <td>@appointment.Date.ToString("g")</td>
                 <td>
                     <a asp-action="Delete" asp-route-id="@appointment.Id" class="btn btn-danger">Sil</a>
